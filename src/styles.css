@@ -773,11 +773,11 @@ h2 {
 .brief {
   border-color: #3f7d74;
 }
-.brief > p:last-child {
+.brief > p:not(.uncertainties) {
   white-space: pre-wrap;
   color: #b9d0d0;
-  line-height: 1.55;
-  font-size: 0.87rem;
+  line-height: 1.5;
+  font-size: 0.9rem;
   margin: 0.75rem 0 0;
 }
 .plan-actions {
