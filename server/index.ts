@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { publicAgentProfiles } from "./agent-profiles.js";
+import "./env.js";
 import { phoenixTracingEnabled } from "./instrumentation.js";
 import { clearMissionSession, runMissionDirector } from "./agents.js";
 import {
@@ -13,8 +13,6 @@ import {
   scenarioIds,
   type MissionState
 } from "./mission.js";
-
-dotenv.config({ path: ".env.local" });
 
 const app = express();
 app.use(express.json());
@@ -33,12 +31,6 @@ app.post("/api/mission/reset", (_req, res) => {
   res.json(missionResponse());
 });
 
-app.post("/api/mission/assess", (_req, res) => {
-  mission = { ...mission, phase: "assessment", reports: [], councilLog: [] };
-  mission.timeline.push({ time: "14:04", event: "Mission Director began an adaptive investigation.", kind: "agent" });
-  res.json(missionResponse());
-});
-
 app.post("/api/mission/request-approval", (req, res) => {
   mission = requestCommand(mission, req.body?.plan ?? {});
   res.json(missionResponse());
@@ -52,17 +44,6 @@ app.post("/api/mission/approve", (req, res) => {
 app.post("/api/mission/advance", (_req, res) => {
   mission = advanceMission(mission);
   res.json(missionResponse());
-});
-
-app.post("/api/mission/director-brief", async (_req, res) => {
-  try {
-    const result = await runMissionDirector(mission);
-    mission = { ...mission, councilLog: result.log, reports: result.reports };
-    mission.timeline.push({ time: "14:05", event: "Mission Director completed the team decision brief.", kind: "agent" });
-    res.json({ plan: result.plan, state: missionResponse() });
-  } catch (error) {
-    res.status(502).json({ error: error instanceof Error ? error.message : "Unable to reach the Mission Director." });
-  }
 });
 
 app.post("/api/mission/convene", async (req, res) => {
@@ -86,6 +67,10 @@ app.post("/api/mission/convene", async (req, res) => {
       mission.reports.push(report);
       send({ type: "report", report });
     }, reviewRequest || undefined, previousPlan);
+    if (!result.plan) {
+      send({ type: "error", message: "The mission team could not produce a plan. Check OPENAI_API_KEY and try again." });
+      return;
+    }
     mission = { ...mission, councilLog: result.log, reports: result.reports };
     mission.timeline.push({ time: "14:05", event: reviewRequest ? "Mission Director completed the commander-requested plan review." : "Mission Director completed the team decision brief.", kind: "agent" });
     send({ type: "complete", plan: result.plan, state: missionResponse() });

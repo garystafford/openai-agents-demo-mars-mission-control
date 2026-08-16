@@ -1,12 +1,9 @@
-import dotenv from "dotenv";
 import { OpenAIAgentsInstrumentation } from "@arizeai/openinference-instrumentation-openai-agents";
 import { register } from "@arizeai/phoenix-otel";
 import * as agents from "@openai/agents";
+import "./env.js";
 
-// Load tracing configuration before any module creates an OpenAI Agents SDK run.
-dotenv.config({ path: ".env.local" });
-
-const enabled = process.env.PHOENIX_ENABLED === "true" || Boolean(process.env.PHOENIX_COLLECTOR_ENDPOINT || process.env.PHOENIX_API_KEY);
+const enabled = process.env.PHOENIX_ENABLED === "true";
 export const phoenixTracingEnabled = enabled;
 
 if (enabled) {

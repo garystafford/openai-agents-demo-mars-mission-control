@@ -1,11 +1,10 @@
-import dotenv from "dotenv";
-
-dotenv.config({ path: ".env.local" });
+import "./env.js";
 
 export type AgentProfileName = "Mission Director" | "NOVA" | "AURA" | "KEPLER" | "MERCURY";
 const reasoningEfforts = ["none", "low", "medium", "high", "xhigh", "max"] as const;
 type ReasoningEffort = (typeof reasoningEfforts)[number];
 type AgentProfile = { model: string; reasoningEffort: ReasoningEffort };
+export type PublicAgentProfile = Pick<AgentProfile, "model" | "reasoningEffort">;
 
 function configuredModel(variable: string, fallback: string) {
   return process.env[variable]?.trim() || fallback;
@@ -31,4 +30,6 @@ export const agentProfiles: Record<AgentProfileName, AgentProfile> = {
   MERCURY: profile("MERCURY", { model: "gpt-5.6-sol", reasoningEffort: "high" })
 };
 
-export const publicAgentProfiles = agentProfiles;
+export const publicAgentProfiles: Record<AgentProfileName, PublicAgentProfile> = Object.fromEntries(
+  Object.entries(agentProfiles).map(([name, profile]) => [name, { model: profile.model, reasoningEffort: profile.reasoningEffort }])
+) as Record<AgentProfileName, PublicAgentProfile>;

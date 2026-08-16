@@ -47,7 +47,7 @@ PHOENIX_COLLECTOR_ENDPOINT=http://localhost:6006
 
 The app exports OpenInference spans for the Director, specialists, model calls,
 and local tool calls. It keeps the OpenAI Agents SDK's native exporter enabled
-as well. If Phoenix is not running, leave `PHOENIX_ENABLED` unset.
+as well. Tracing starts only when `PHOENIX_ENABLED=true`.
 
 Useful local commands:
 

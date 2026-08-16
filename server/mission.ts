@@ -163,10 +163,6 @@ export function createMission(scenarioId: IncidentScenario["id"] = "dust_storm")
   };
 }
 
-export function specialistReports(_state: MissionState): SpecialistReport[] {
-  return [];
-}
-
 export function normalizePlan(state: MissionState, input: Partial<DecisionPlan>): DecisionPlan {
   const actions = (input.actions ?? []).filter((action): action is MissionAction => state.scenario.availableActions.includes(action as MissionAction));
   return {
