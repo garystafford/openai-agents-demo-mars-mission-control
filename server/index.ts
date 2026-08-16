@@ -9,16 +9,15 @@ import {
   advanceMission,
   approveCommand,
   createMission,
+  randomScenarioId,
   requestCommand,
-  scenarioIds,
   type MissionState
 } from "./mission.js";
 
 const app = express();
 app.use(express.json());
 
-let scenarioIndex = 0;
-let mission: MissionState = createMission(scenarioIds[scenarioIndex]);
+let mission: MissionState = createMission(randomScenarioId());
 const missionResponse = () => ({ ...mission, agentProfiles: publicAgentProfiles });
 
 app.get("/health", (_req, res) => res.json({ ok: true, mission: mission.missionId, phoenixTracing: phoenixTracingEnabled }));
@@ -26,8 +25,7 @@ app.get("/api/mission", (_req, res) => res.json(missionResponse()));
 
 app.post("/api/mission/reset", (_req, res) => {
   clearMissionSession(mission.missionId);
-  scenarioIndex = (scenarioIndex + 1) % scenarioIds.length;
-  mission = createMission(scenarioIds[scenarioIndex]);
+  mission = createMission(randomScenarioId(mission.scenario.id));
   res.json(missionResponse());
 });
 

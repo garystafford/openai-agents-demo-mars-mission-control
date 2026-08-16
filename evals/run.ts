@@ -1,9 +1,17 @@
-import { advanceMission, approveCommand, createMission, requestCommand, scenarioIds } from "../server/mission.js";
+import { advanceMission, approveCommand, createMission, randomScenarioId, requestCommand, scenarioIds } from "../server/mission.js";
 
 const cases = [
   {
-    name: "new incidents rotate across distinct scenario types",
-    run: () => new Set(scenarioIds.map((id) => createMission(id).scenario.title)).size === 3
+    name: "five distinct incident scenarios are available",
+    run: () => new Set(scenarioIds.map((id) => createMission(id).scenario.title)).size === 5
+  },
+  {
+    name: "each incident presents a balanced six-reading telemetry set",
+    run: () => scenarioIds.every((id) => createMission(id).telemetry.length === 6)
+  },
+  {
+    name: "random incident selection does not immediately repeat the current scenario",
+    run: () => scenarioIds.every((id) => randomScenarioId(id) !== id)
   },
   {
     name: "approval gate appears before any command is applied",

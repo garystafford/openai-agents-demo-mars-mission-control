@@ -53,9 +53,10 @@ export type DecisionPlan = {
 };
 
 export type IncidentScenario = {
-  id: "dust_storm" | "coolant_leak" | "relay_failure";
+  id: "dust_storm" | "coolant_leak" | "relay_failure" | "solar_flare" | "rover_recovery";
   title: string;
   briefing: string;
+  minutesToImpact: number;
   activeRisks: string[];
   verification: Record<string, string>;
   requiredActions: MissionAction[];
@@ -79,13 +80,14 @@ export type MissionState = {
   outcome?: "stabilized" | "degraded";
 };
 
-export const scenarioIds: IncidentScenario["id"][] = ["dust_storm", "coolant_leak", "relay_failure"];
+export const scenarioIds: IncidentScenario["id"][] = ["dust_storm", "coolant_leak", "relay_failure", "solar_flare", "rover_recovery"];
 
 const scenarios: Record<IncidentScenario["id"], IncidentScenario> = {
   dust_storm: {
     id: "dust_storm",
     title: "Approaching Martian Dust Storm",
     briefing: "A dust storm reaches Ares-7 in 18 minutes. One EVA crew member is outside while solar output is collapsing and the oxygen recycler is unstable.",
+    minutesToImpact: 18,
     activeRisks: ["Crew is outside", "Breathable cabin loop is unstable", "Solar power is degrading"],
     verification: {
       orbital: "Orbital weather cross-check: storm acceleration is real, but the densest gust front may arrive 3 minutes later than the ground sensor predicts.",
@@ -99,13 +101,15 @@ const scenarios: Record<IncidentScenario["id"], IncidentScenario> = {
       { label: "Solar array", value: "31% output", status: "critical", detail: "Dust accumulation is rising." },
       { label: "O₂ recycler", value: "Fault E-17", status: "critical", detail: "CO₂ scrubber loop is oscillating." },
       { label: "Habitat battery", value: "61%", status: "watch", detail: "Enough for one high-load survival window." },
-      { label: "EVA crew", value: "1 outside", status: "watch", detail: "Rover is 2.7 km from habitat." }
+      { label: "EVA crew", value: "1 outside", status: "watch", detail: "Rover is 2.7 km from habitat." },
+      { label: "Cabin pressure", value: "101.2 kPa", status: "nominal", detail: "Habitat pressure remains stable despite the scrubber fault." }
     ]
   },
   coolant_leak: {
     id: "coolant_leak",
     title: "Habitat Coolant Leak",
     briefing: "A coolant leak is spreading through the thermal loop. The habitat is warm, a repair drone is available, and the crew is inside—but isolating the loop may black out communications.",
+    minutesToImpact: 24,
     activeRisks: ["Thermal loop pressure is falling", "Cabin heat is rising", "Repair may interrupt communications"],
     verification: {
       orbital: "Orbital thermal image: the exterior radiator is intact; the leak likely originates in the habitat service bay.",
@@ -119,13 +123,15 @@ const scenarios: Record<IncidentScenario["id"], IncidentScenario> = {
       { label: "Cabin temperature", value: "27.8°C", status: "watch", detail: "Rising 0.7°C every 6 minutes." },
       { label: "Repair drone", value: "Ready", status: "nominal", detail: "Sealant cartridge and diagnostic arm are available." },
       { label: "Habitat battery", value: "54%", status: "watch", detail: "Drone deployment requires a temporary high-load window." },
-      { label: "Comms relay", value: "Primary online", status: "watch", detail: "Thermal-loop isolation could interrupt the primary relay." }
+      { label: "Comms relay", value: "Primary online", status: "watch", detail: "Thermal-loop isolation could interrupt the primary relay." },
+      { label: "Exterior radiator", value: "Intact", status: "nominal", detail: "Thermal imaging confirms the leak is inside the service bay." }
     ]
   },
   relay_failure: {
     id: "relay_failure",
     title: "Orbital Relay Failure",
     briefing: "The primary orbital relay has failed during a worsening dust storm. A science traverse is beyond line of sight, the backup relay is available, and power reserve is limited.",
+    minutesToImpact: 31,
     activeRisks: ["Traverse crew is beyond line of sight", "Primary communications relay is down", "Backup relay draws from a limited battery"],
     verification: {
       orbital: "Orbital diagnostic: the relay fault is localized to the primary antenna controller; no solar flare is present.",
@@ -139,7 +145,52 @@ const scenarios: Record<IncidentScenario["id"], IncidentScenario> = {
       { label: "Traverse crew", value: "2 beyond line of sight", status: "critical", detail: "Automatic beacon only; no voice confirmation." },
       { label: "Backup relay", value: "Standby", status: "watch", detail: "Low-rate voice and telemetry available at high battery cost." },
       { label: "Habitat battery", value: "48%", status: "watch", detail: "Dust cover limits solar recharge for the next 6 hours." },
-      { label: "Storm front", value: "31 min", status: "watch", detail: "Visibility is expected to worsen on the traverse route." }
+      { label: "Storm front", value: "31 min", status: "watch", detail: "Visibility is expected to worsen on the traverse route." },
+      { label: "Antenna controller", value: "No response", status: "critical", detail: "Primary relay recovery cannot be attempted during this response." }
+    ]
+  },
+  solar_flare: {
+    id: "solar_flare",
+    title: "Solar Flare Warning",
+    briefing: "An escalating solar flare will reach Mars in 22 minutes. An EVA crew is collecting samples, the primary communications path is vulnerable, and power must be reserved for radiation shelter systems.",
+    minutesToImpact: 22,
+    activeRisks: ["EVA crew is exposed", "Primary communications may be disrupted", "Shelter systems need protected reserve power"],
+    verification: {
+      orbital: "Orbital radiation monitor: the flare is intensifying, but the peak particle arrival is expected to last less than 45 minutes.",
+      maintenance: "Maintenance review: the backup relay can maintain low-rate emergency traffic from the shielded equipment bay.",
+      crew: "EVA crew report: the rover is operational and can reach the radiation shelter route in approximately 11 minutes."
+    },
+    requiredActions: ["recall_eva", "shed_nonessential_load", "switch_to_backup_relay"],
+    availableActions: ["recall_eva", "shed_nonessential_load", "switch_to_backup_relay", "verify_orbital_weather"],
+    telemetry: [
+      { label: "Radiation flux", value: "Rising 18%/min", status: "critical", detail: "Particle flux exceeds EVA exposure limits." },
+      { label: "EVA crew", value: "1 outside", status: "critical", detail: "Sample team is 2.1 km from the habitat." },
+      { label: "Backup relay", value: "Standby", status: "watch", detail: "Shielded relay is available for emergency traffic." },
+      { label: "Habitat battery", value: "58%", status: "watch", detail: "Shelter systems need a protected power reserve." },
+      { label: "Solar array", value: "Nominal", status: "watch", detail: "Array control may need to enter a protective orientation." },
+      { label: "Radiation shelter", value: "Ready", status: "nominal", detail: "Shielded habitat bay can support the crew through the flare peak." }
+    ]
+  },
+  rover_recovery: {
+    id: "rover_recovery",
+    title: "Stranded Rover Recovery",
+    briefing: "A science rover has lost traction in a shallow crater while two crew members are beyond line of sight. A repair drone can deploy a tow rig, but worsening dust may close the recovery window.",
+    minutesToImpact: 27,
+    activeRisks: ["Traverse crew is stranded", "Rover cannot climb out under its own power", "Dust will reduce recovery visibility"],
+    verification: {
+      orbital: "Orbital terrain pass: the crater rim is stable, but the western exit route will become unsafe once visibility drops below 300 meters.",
+      maintenance: "Maintenance review: the repair drone tow rig can stabilize the rover, but it needs a continuous relay link during deployment.",
+      crew: "Traverse crew report: life support is nominal, but the rover's left drive wheel is spinning freely and cannot gain traction."
+    },
+    requiredActions: ["deploy_repair_drone", "switch_to_backup_relay"],
+    availableActions: ["deploy_repair_drone", "switch_to_backup_relay", "shed_nonessential_load", "verify_orbital_weather"],
+    telemetry: [
+      { label: "Traverse crew", value: "2 in rover", status: "critical", detail: "Crew is stationary in the crater with beacon contact only." },
+      { label: "Repair drone", value: "Tow rig ready", status: "nominal", detail: "Tow line, anchors, and diagnostic arm are available." },
+      { label: "Backup relay", value: "Standby", status: "watch", detail: "Continuous recovery telemetry requires the backup path." },
+      { label: "Rover traction", value: "0% left drive", status: "critical", detail: "Wheel slip prevents ascent from the crater." },
+      { label: "Storm front", value: "27 min", status: "watch", detail: "Visibility is degrading on the western recovery route." },
+      { label: "Rover battery", value: "43%", status: "watch", detail: "Life support and recovery systems have enough reserve for the current window." }
     ]
   }
 };
@@ -149,7 +200,7 @@ export function createMission(scenarioId: IncidentScenario["id"] = "dust_storm")
   return {
     missionId: "ares-7-" + scenario.id,
     sol: 184,
-    minutesToImpact: scenario.id === "coolant_leak" ? 24 : scenario.id === "relay_failure" ? 31 : 18,
+    minutesToImpact: scenario.minutesToImpact,
     monitoringIntervals: 0,
     phase: "alert",
     scenario,
@@ -161,6 +212,11 @@ export function createMission(scenarioId: IncidentScenario["id"] = "dust_storm")
       { time: "14:03", event: scenario.briefing, kind: "system" }
     ]
   };
+}
+
+export function randomScenarioId(exclude?: IncidentScenario["id"]): IncidentScenario["id"] {
+  const choices = scenarioIds.filter((id) => id !== exclude);
+  return choices[Math.floor(Math.random() * choices.length)] ?? scenarioIds[0];
 }
 
 export function normalizePlan(state: MissionState, input: Partial<DecisionPlan>): DecisionPlan {
@@ -238,6 +294,10 @@ export function advanceMission(state: MissionState): MissionState {
       return { ...reading, value: "78% pressure", status: "nominal", detail: "Pressure is recovering after the service-bay seal." };
     }
     if (reading.label === "Repair drone" && actions.includes("deploy_repair_drone")) {
+      const roverRecovery = state.scenario.id === "rover_recovery";
+      if (roverRecovery && interval === 1) return { ...reading, value: "Tow rig en route", status: "watch", detail: "Drone is flying to the crater with anchors and tow line." };
+      if (roverRecovery && interval === 2) return { ...reading, value: "Rover stabilized", status: "watch", detail: "Tow rig has anchored and is correcting the rover's wheel slip." };
+      if (roverRecovery) return { ...reading, value: "Recovery verified", status: "nominal", detail: "The rover has regained traction and can leave the crater." };
       if (interval === 1) return { ...reading, value: "En route", status: "watch", detail: "Diagnostic arm and sealant cartridge are active." };
       if (interval === 2) return { ...reading, value: "Applying sealant", status: "watch", detail: "The drone is sealing the service-bay line." };
       return { ...reading, value: "Seal verified", status: "nominal", detail: "The drone has completed the pressure verification pass." };
