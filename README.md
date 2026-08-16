@@ -8,24 +8,29 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="docs/images/mission-console.png">
-        <img src="docs/images/mission-console.png" alt="Mars Mission Control dashboard showing a dust-storm incident" />
-      </a>
-      <br />
-      <strong>Mission command interface</strong>
-    </td>
-    <td width="50%" valign="top">
-      <a href="docs/images/phoenix-tracing.png">
-        <img src="docs/images/phoenix-tracing.png" alt="Arize Phoenix trace view showing the mission-agent workflow" />
-      </a>
-      <br />
-      <strong>Phoenix trace detail</strong>
-    </td>
-  </tr>
-</table>
+### 1. Mission Control
+
+<a href="docs/images/mission-console.png">
+  <img src="docs/images/mission-console.png" alt="Mars Mission Control dashboard showing a dust-storm incident" />
+</a>
+
+### 2. OpenAI Agents SDK features
+
+<a href="docs/images/agents-sdk-overview.png">
+  <img src="docs/images/agents-sdk-overview.png" alt="Technical overview showing the OpenAI Agents SDK features demonstrated by the mission" />
+</a>
+
+### 3. Mission team
+
+<a href="docs/images/mission-team.png">
+  <img src="docs/images/mission-team.png" alt="Command structure showing the Mission Director and four specialized agents" />
+</a>
+
+### 4. Phoenix tracing
+
+<a href="docs/images/phoenix-tracing.png">
+  <img src="docs/images/phoenix-tracing.png" alt="Arize Phoenix trace view showing the mission-agent workflow" />
+</a>
 
 ## Technology
 

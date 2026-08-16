@@ -416,61 +416,71 @@ function App() {
               </button>
             </div>
             <p className="overview-intro">
-              This is an adaptive mission simulation. The team investigates a scenario, chooses
-              evidence to gather, and produces a structured proposal; the application retains
-              command execution and safety controls.
+              The OpenAI Agents SDK runs the Mission Director and specialist tool loop. The
+              surrounding application owns the simulated command, authorization boundary, and
+              deterministic outcome.
             </p>
             <div className="overview-grid">
               <article>
-                <h3>Director and specialists</h3>
+                <h3>Multi-agent delegation</h3>
                 <p>
                   The Mission Director is the manager. NOVA, AURA, KEPLER, and MERCURY are
-                  specialists exposed with <code>Agent.asTool()</code>; the Director can choose a
-                  subset instead of automatically consulting all four.
+                  specialists exposed with <code>Agent.asTool()</code>. The Director decides which
+                  specialist tools to call, rather than automatically consulting all four.
                 </p>
               </article>
               <article>
-                <h3>Configurable model profiles</h3>
+                <h3>Role-specific agents and models</h3>
                 <p>
-                  Each role reads its model and reasoning effort from environment configuration. The
-                  command-structure panel shows the active non-secret profile for this run.
+                  Each <code>Agent</code> has focused instructions, its own tool access, and a
+                  configurable model and reasoning-effort profile. The command-structure panel shows
+                  the active non-secret profiles for this run.
                 </p>
               </article>
               <article>
-                <h3>Typed mission tools</h3>
+                <h3>Typed function tools</h3>
                 <p>
-                  Specialists use typed tools for telemetry, protocol lookup, and independent
-                  orbital, maintenance, or crew verification. The selected evidence can differ by
+                  Specialists call typed tools for telemetry, protocol lookup, and independent
+                  orbital, maintenance, or crew verification. The evidence they choose can differ by
                   incident.
                 </p>
               </article>
               <article>
-                <h3>Structured decision plan</h3>
+                <h3>Structured outputs</h3>
                 <p>
-                  The Director returns a typed plan: actions, rationale, unresolved uncertainty, and
-                  approval scope. The simulator validates those actions against the incident’s
-                  actual critical needs.
+                  Specialist advice and the Director’s proposal use typed schemas. The plan includes
+                  actions, rationale, remaining uncertainty, and approval scope before the simulator
+                  validates it against the incident’s critical needs.
                 </p>
               </article>
               <article>
-                <h3>Visible run activity</h3>
+                <h3>Session-backed reassessment</h3>
                 <p>
-                  The mission channel relays nested-run callbacks over a server-sent event stream.
-                  It shows evidence requests and specialist submissions, not hidden model reasoning.
+                  A mission-scoped <code>MemorySession</code> preserves the investigation context.
+                  When the commander requests a review, the Director can retain or revise the plan
+                  using that same session state.
+                </p>
+              </article>
+              <article>
+                <h3>Observable run activity</h3>
+                <p>
+                  The application streams selected observable events over server-sent events:
+                  evidence reads, verification requests, and structured specialist submissions. It
+                  intentionally does not expose private model reasoning.
                 </p>
               </article>
               <article>
                 <h3>Human authorization</h3>
                 <p>
-                  The authorization card is an application-level safety checkpoint: the Director may
+                  The authorization card is an application-level safety checkpoint. The Director may
                   recommend a plan, but only the commander can permit the simulated actions.
                 </p>
               </article>
               <article>
-                <h3>Phoenix tracing and evaluation</h3>
+                <h3>Tracing and evaluation</h3>
                 <p>
                   When Phoenix is configured, OpenInference captures the Director, specialists,
-                  model calls, and tools as trace spans. Local checks verify scenario,
+                  model calls, and tools as trace spans. Local evaluations verify scenario,
                   authorization, and outcome behavior.
                 </p>
               </article>
