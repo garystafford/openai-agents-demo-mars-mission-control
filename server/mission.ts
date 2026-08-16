@@ -13,7 +13,7 @@ export const missionActions = [
   "isolate_scrubber",
   "verify_orbital_weather",
   "deploy_repair_drone",
-  "switch_to_backup_relay"
+  "switch_to_backup_relay",
 ] as const;
 
 export type MissionAction = (typeof missionActions)[number];
@@ -24,7 +24,7 @@ export const actionLabels: Record<MissionAction, string> = {
   isolate_scrubber: "Isolate the unstable scrubber loop",
   verify_orbital_weather: "Request an orbital weather cross-check",
   deploy_repair_drone: "Deploy the exterior repair drone",
-  switch_to_backup_relay: "Switch to the backup communications relay"
+  switch_to_backup_relay: "Switch to the backup communications relay",
 };
 
 export type SpecialistReport = {
@@ -80,119 +80,336 @@ export type MissionState = {
   outcome?: "stabilized" | "degraded";
 };
 
-export const scenarioIds: IncidentScenario["id"][] = ["dust_storm", "coolant_leak", "relay_failure", "solar_flare", "rover_recovery"];
+export const scenarioIds: IncidentScenario["id"][] = [
+  "dust_storm",
+  "coolant_leak",
+  "relay_failure",
+  "solar_flare",
+  "rover_recovery",
+];
 
 const scenarios: Record<IncidentScenario["id"], IncidentScenario> = {
   dust_storm: {
     id: "dust_storm",
     title: "Approaching Martian Dust Storm",
-    briefing: "A dust storm reaches Ares-7 in 18 minutes. One EVA crew member is outside while solar output is collapsing and the oxygen recycler is unstable.",
+    briefing:
+      "A dust storm reaches Ares-7 in 18 minutes. One EVA crew member is outside while solar output is collapsing and the oxygen recycler is unstable.",
     minutesToImpact: 18,
-    activeRisks: ["Crew is outside", "Breathable cabin loop is unstable", "Solar power is degrading"],
+    activeRisks: [
+      "Crew is outside",
+      "Breathable cabin loop is unstable",
+      "Solar power is degrading",
+    ],
     verification: {
-      orbital: "Orbital weather cross-check: storm acceleration is real, but the densest gust front may arrive 3 minutes later than the ground sensor predicts.",
-      maintenance: "Maintenance review: the secondary scrubber loop can be isolated without damaging the primary loop.",
-      crew: "EVA crew report: rover is operational and route Bravo remains passable for approximately 14 minutes."
+      orbital:
+        "Orbital weather cross-check: storm acceleration is real, but the densest gust front may arrive 3 minutes later than the ground sensor predicts.",
+      maintenance:
+        "Maintenance review: the secondary scrubber loop can be isolated without damaging the primary loop.",
+      crew: "EVA crew report: rover is operational and route Bravo remains passable for approximately 14 minutes.",
     },
     requiredActions: ["recall_eva", "isolate_scrubber", "shed_nonessential_load"],
-    availableActions: ["recall_eva", "shed_nonessential_load", "isolate_scrubber", "verify_orbital_weather", "deploy_repair_drone"],
+    availableActions: [
+      "recall_eva",
+      "shed_nonessential_load",
+      "isolate_scrubber",
+      "verify_orbital_weather",
+      "deploy_repair_drone",
+    ],
     telemetry: [
-      { label: "Storm front", value: "18 min", status: "critical", detail: "Wind wall accelerating 16% above forecast." },
-      { label: "Solar array", value: "31% output", status: "critical", detail: "Dust accumulation is rising." },
-      { label: "O₂ recycler", value: "Fault E-17", status: "critical", detail: "CO₂ scrubber loop is oscillating." },
-      { label: "Habitat battery", value: "61%", status: "watch", detail: "Enough for one high-load survival window." },
-      { label: "EVA crew", value: "1 outside", status: "watch", detail: "Rover is 2.7 km from habitat." },
-      { label: "Cabin pressure", value: "101.2 kPa", status: "nominal", detail: "Habitat pressure remains stable despite the scrubber fault." }
-    ]
+      {
+        label: "Storm front",
+        value: "18 min",
+        status: "critical",
+        detail: "Wind wall accelerating 16% above forecast.",
+      },
+      {
+        label: "Solar array",
+        value: "31% output",
+        status: "critical",
+        detail: "Dust accumulation is rising.",
+      },
+      {
+        label: "O₂ recycler",
+        value: "Fault E-17",
+        status: "critical",
+        detail: "CO₂ scrubber loop is oscillating.",
+      },
+      {
+        label: "Habitat battery",
+        value: "61%",
+        status: "watch",
+        detail: "Enough for one high-load survival window.",
+      },
+      {
+        label: "EVA crew",
+        value: "1 outside",
+        status: "watch",
+        detail: "Rover is 2.7 km from habitat.",
+      },
+      {
+        label: "Cabin pressure",
+        value: "101.2 kPa",
+        status: "nominal",
+        detail: "Habitat pressure remains stable despite the scrubber fault.",
+      },
+    ],
   },
   coolant_leak: {
     id: "coolant_leak",
     title: "Habitat Coolant Leak",
-    briefing: "A coolant leak is spreading through the thermal loop. The habitat is warm, a repair drone is available, and the crew is inside—but isolating the loop may black out communications.",
+    briefing:
+      "A coolant leak is spreading through the thermal loop. The habitat is warm, a repair drone is available, and the crew is inside—but isolating the loop may black out communications.",
     minutesToImpact: 24,
-    activeRisks: ["Thermal loop pressure is falling", "Cabin heat is rising", "Repair may interrupt communications"],
+    activeRisks: [
+      "Thermal loop pressure is falling",
+      "Cabin heat is rising",
+      "Repair may interrupt communications",
+    ],
     verification: {
-      orbital: "Orbital thermal image: the exterior radiator is intact; the leak likely originates in the habitat service bay.",
-      maintenance: "Maintenance review: the repair drone can seal the service-bay line, but deployment draws a high transient power load.",
-      crew: "Crew report: service bay is clear, but manual repair would expose a crew member to a hot-surface hazard."
+      orbital:
+        "Orbital thermal image: the exterior radiator is intact; the leak likely originates in the habitat service bay.",
+      maintenance:
+        "Maintenance review: the repair drone can seal the service-bay line, but deployment draws a high transient power load.",
+      crew: "Crew report: service bay is clear, but manual repair would expose a crew member to a hot-surface hazard.",
     },
     requiredActions: ["deploy_repair_drone", "shed_nonessential_load"],
-    availableActions: ["shed_nonessential_load", "deploy_repair_drone", "switch_to_backup_relay", "verify_orbital_weather"],
+    availableActions: [
+      "shed_nonessential_load",
+      "deploy_repair_drone",
+      "switch_to_backup_relay",
+      "verify_orbital_weather",
+    ],
     telemetry: [
-      { label: "Thermal loop", value: "42% pressure", status: "critical", detail: "Coolant loss is accelerating in the service bay." },
-      { label: "Cabin temperature", value: "27.8°C", status: "watch", detail: "Rising 0.7°C every 6 minutes." },
-      { label: "Repair drone", value: "Ready", status: "nominal", detail: "Sealant cartridge and diagnostic arm are available." },
-      { label: "Habitat battery", value: "54%", status: "watch", detail: "Drone deployment requires a temporary high-load window." },
-      { label: "Comms relay", value: "Primary online", status: "watch", detail: "Thermal-loop isolation could interrupt the primary relay." },
-      { label: "Exterior radiator", value: "Intact", status: "nominal", detail: "Thermal imaging confirms the leak is inside the service bay." }
-    ]
+      {
+        label: "Thermal loop",
+        value: "42% pressure",
+        status: "critical",
+        detail: "Coolant loss is accelerating in the service bay.",
+      },
+      {
+        label: "Cabin temperature",
+        value: "27.8°C",
+        status: "watch",
+        detail: "Rising 0.7°C every 6 minutes.",
+      },
+      {
+        label: "Repair drone",
+        value: "Ready",
+        status: "nominal",
+        detail: "Sealant cartridge and diagnostic arm are available.",
+      },
+      {
+        label: "Habitat battery",
+        value: "54%",
+        status: "watch",
+        detail: "Drone deployment requires a temporary high-load window.",
+      },
+      {
+        label: "Comms relay",
+        value: "Primary online",
+        status: "watch",
+        detail: "Thermal-loop isolation could interrupt the primary relay.",
+      },
+      {
+        label: "Exterior radiator",
+        value: "Intact",
+        status: "nominal",
+        detail: "Thermal imaging confirms the leak is inside the service bay.",
+      },
+    ],
   },
   relay_failure: {
     id: "relay_failure",
     title: "Orbital Relay Failure",
-    briefing: "The primary orbital relay has failed during a worsening dust storm. A science traverse is beyond line of sight, the backup relay is available, and power reserve is limited.",
+    briefing:
+      "The primary orbital relay has failed during a worsening dust storm. A science traverse is beyond line of sight, the backup relay is available, and power reserve is limited.",
     minutesToImpact: 31,
-    activeRisks: ["Traverse crew is beyond line of sight", "Primary communications relay is down", "Backup relay draws from a limited battery"],
+    activeRisks: [
+      "Traverse crew is beyond line of sight",
+      "Primary communications relay is down",
+      "Backup relay draws from a limited battery",
+    ],
     verification: {
-      orbital: "Orbital diagnostic: the relay fault is localized to the primary antenna controller; no solar flare is present.",
-      maintenance: "Maintenance review: the backup relay will provide voice and low-rate telemetry but consumes 9% battery per hour.",
-      crew: "Traverse crew beacon: automatic position pings remain available, but two-way voice contact is not restored."
+      orbital:
+        "Orbital diagnostic: the relay fault is localized to the primary antenna controller; no solar flare is present.",
+      maintenance:
+        "Maintenance review: the backup relay will provide voice and low-rate telemetry but consumes 9% battery per hour.",
+      crew: "Traverse crew beacon: automatic position pings remain available, but two-way voice contact is not restored.",
     },
     requiredActions: ["switch_to_backup_relay"],
-    availableActions: ["switch_to_backup_relay", "shed_nonessential_load", "verify_orbital_weather", "recall_eva"],
+    availableActions: [
+      "switch_to_backup_relay",
+      "shed_nonessential_load",
+      "verify_orbital_weather",
+      "recall_eva",
+    ],
     telemetry: [
-      { label: "Primary relay", value: "Offline", status: "critical", detail: "Antenna controller is not responding." },
-      { label: "Traverse crew", value: "2 beyond line of sight", status: "critical", detail: "Automatic beacon only; no voice confirmation." },
-      { label: "Backup relay", value: "Standby", status: "watch", detail: "Low-rate voice and telemetry available at high battery cost." },
-      { label: "Habitat battery", value: "48%", status: "watch", detail: "Dust cover limits solar recharge for the next 6 hours." },
-      { label: "Storm front", value: "31 min", status: "watch", detail: "Visibility is expected to worsen on the traverse route." },
-      { label: "Antenna controller", value: "No response", status: "critical", detail: "Primary relay recovery cannot be attempted during this response." }
-    ]
+      {
+        label: "Primary relay",
+        value: "Offline",
+        status: "critical",
+        detail: "Antenna controller is not responding.",
+      },
+      {
+        label: "Traverse crew",
+        value: "2 beyond line of sight",
+        status: "critical",
+        detail: "Automatic beacon only; no voice confirmation.",
+      },
+      {
+        label: "Backup relay",
+        value: "Standby",
+        status: "watch",
+        detail: "Low-rate voice and telemetry available at high battery cost.",
+      },
+      {
+        label: "Habitat battery",
+        value: "48%",
+        status: "watch",
+        detail: "Dust cover limits solar recharge for the next 6 hours.",
+      },
+      {
+        label: "Storm front",
+        value: "31 min",
+        status: "watch",
+        detail: "Visibility is expected to worsen on the traverse route.",
+      },
+      {
+        label: "Antenna controller",
+        value: "No response",
+        status: "critical",
+        detail: "Primary relay recovery cannot be attempted during this response.",
+      },
+    ],
   },
   solar_flare: {
     id: "solar_flare",
     title: "Solar Flare Warning",
-    briefing: "An escalating solar flare will reach Mars in 22 minutes. An EVA crew is collecting samples, the primary communications path is vulnerable, and power must be reserved for radiation shelter systems.",
+    briefing:
+      "An escalating solar flare will reach Mars in 22 minutes. An EVA crew is collecting samples, the primary communications path is vulnerable, and power must be reserved for radiation shelter systems.",
     minutesToImpact: 22,
-    activeRisks: ["EVA crew is exposed", "Primary communications may be disrupted", "Shelter systems need protected reserve power"],
+    activeRisks: [
+      "EVA crew is exposed",
+      "Primary communications may be disrupted",
+      "Shelter systems need protected reserve power",
+    ],
     verification: {
-      orbital: "Orbital radiation monitor: the flare is intensifying, but the peak particle arrival is expected to last less than 45 minutes.",
-      maintenance: "Maintenance review: the backup relay can maintain low-rate emergency traffic from the shielded equipment bay.",
-      crew: "EVA crew report: the rover is operational and can reach the radiation shelter route in approximately 11 minutes."
+      orbital:
+        "Orbital radiation monitor: the flare is intensifying, but the peak particle arrival is expected to last less than 45 minutes.",
+      maintenance:
+        "Maintenance review: the backup relay can maintain low-rate emergency traffic from the shielded equipment bay.",
+      crew: "EVA crew report: the rover is operational and can reach the radiation shelter route in approximately 11 minutes.",
     },
     requiredActions: ["recall_eva", "shed_nonessential_load", "switch_to_backup_relay"],
-    availableActions: ["recall_eva", "shed_nonessential_load", "switch_to_backup_relay", "verify_orbital_weather"],
+    availableActions: [
+      "recall_eva",
+      "shed_nonessential_load",
+      "switch_to_backup_relay",
+      "verify_orbital_weather",
+    ],
     telemetry: [
-      { label: "Radiation flux", value: "Rising 18%/min", status: "critical", detail: "Particle flux exceeds EVA exposure limits." },
-      { label: "EVA crew", value: "1 outside", status: "critical", detail: "Sample team is 2.1 km from the habitat." },
-      { label: "Backup relay", value: "Standby", status: "watch", detail: "Shielded relay is available for emergency traffic." },
-      { label: "Habitat battery", value: "58%", status: "watch", detail: "Shelter systems need a protected power reserve." },
-      { label: "Solar array", value: "Nominal", status: "watch", detail: "Array control may need to enter a protective orientation." },
-      { label: "Radiation shelter", value: "Ready", status: "nominal", detail: "Shielded habitat bay can support the crew through the flare peak." }
-    ]
+      {
+        label: "Radiation flux",
+        value: "Rising 18%/min",
+        status: "critical",
+        detail: "Particle flux exceeds EVA exposure limits.",
+      },
+      {
+        label: "EVA crew",
+        value: "1 outside",
+        status: "critical",
+        detail: "Sample team is 2.1 km from the habitat.",
+      },
+      {
+        label: "Backup relay",
+        value: "Standby",
+        status: "watch",
+        detail: "Shielded relay is available for emergency traffic.",
+      },
+      {
+        label: "Habitat battery",
+        value: "58%",
+        status: "watch",
+        detail: "Shelter systems need a protected power reserve.",
+      },
+      {
+        label: "Solar array",
+        value: "Nominal",
+        status: "watch",
+        detail: "Array control may need to enter a protective orientation.",
+      },
+      {
+        label: "Radiation shelter",
+        value: "Ready",
+        status: "nominal",
+        detail: "Shielded habitat bay can support the crew through the flare peak.",
+      },
+    ],
   },
   rover_recovery: {
     id: "rover_recovery",
     title: "Stranded Rover Recovery",
-    briefing: "A science rover has lost traction in a shallow crater while two crew members are beyond line of sight. A repair drone can deploy a tow rig, but worsening dust may close the recovery window.",
+    briefing:
+      "A science rover has lost traction in a shallow crater while two crew members are beyond line of sight. A repair drone can deploy a tow rig, but worsening dust may close the recovery window.",
     minutesToImpact: 27,
-    activeRisks: ["Traverse crew is stranded", "Rover cannot climb out under its own power", "Dust will reduce recovery visibility"],
+    activeRisks: [
+      "Traverse crew is stranded",
+      "Rover cannot climb out under its own power",
+      "Dust will reduce recovery visibility",
+    ],
     verification: {
-      orbital: "Orbital terrain pass: the crater rim is stable, but the western exit route will become unsafe once visibility drops below 300 meters.",
-      maintenance: "Maintenance review: the repair drone tow rig can stabilize the rover, but it needs a continuous relay link during deployment.",
-      crew: "Traverse crew report: life support is nominal, but the rover's left drive wheel is spinning freely and cannot gain traction."
+      orbital:
+        "Orbital terrain pass: the crater rim is stable, but the western exit route will become unsafe once visibility drops below 300 meters.",
+      maintenance:
+        "Maintenance review: the repair drone tow rig can stabilize the rover, but it needs a continuous relay link during deployment.",
+      crew: "Traverse crew report: life support is nominal, but the rover's left drive wheel is spinning freely and cannot gain traction.",
     },
     requiredActions: ["deploy_repair_drone", "switch_to_backup_relay"],
-    availableActions: ["deploy_repair_drone", "switch_to_backup_relay", "shed_nonessential_load", "verify_orbital_weather"],
+    availableActions: [
+      "deploy_repair_drone",
+      "switch_to_backup_relay",
+      "shed_nonessential_load",
+      "verify_orbital_weather",
+    ],
     telemetry: [
-      { label: "Traverse crew", value: "2 in rover", status: "critical", detail: "Crew is stationary in the crater with beacon contact only." },
-      { label: "Repair drone", value: "Tow rig ready", status: "nominal", detail: "Tow line, anchors, and diagnostic arm are available." },
-      { label: "Backup relay", value: "Standby", status: "watch", detail: "Continuous recovery telemetry requires the backup path." },
-      { label: "Rover traction", value: "0% left drive", status: "critical", detail: "Wheel slip prevents ascent from the crater." },
-      { label: "Storm front", value: "27 min", status: "watch", detail: "Visibility is degrading on the western recovery route." },
-      { label: "Rover battery", value: "43%", status: "watch", detail: "Life support and recovery systems have enough reserve for the current window." }
-    ]
-  }
+      {
+        label: "Traverse crew",
+        value: "2 in rover",
+        status: "critical",
+        detail: "Crew is stationary in the crater with beacon contact only.",
+      },
+      {
+        label: "Repair drone",
+        value: "Tow rig ready",
+        status: "nominal",
+        detail: "Tow line, anchors, and diagnostic arm are available.",
+      },
+      {
+        label: "Backup relay",
+        value: "Standby",
+        status: "watch",
+        detail: "Continuous recovery telemetry requires the backup path.",
+      },
+      {
+        label: "Rover traction",
+        value: "0% left drive",
+        status: "critical",
+        detail: "Wheel slip prevents ascent from the crater.",
+      },
+      {
+        label: "Storm front",
+        value: "27 min",
+        status: "watch",
+        detail: "Visibility is degrading on the western recovery route.",
+      },
+      {
+        label: "Rover battery",
+        value: "43%",
+        status: "watch",
+        detail: "Life support and recovery systems have enough reserve for the current window.",
+      },
+    ],
+  },
 };
 
 export function createMission(scenarioId: IncidentScenario["id"] = "dust_storm"): MissionState {
@@ -209,8 +426,8 @@ export function createMission(scenarioId: IncidentScenario["id"] = "dust_storm")
     councilLog: [],
     timeline: [
       { time: "14:02", event: "Ares-7 detects: " + scenario.title + ".", kind: "system" },
-      { time: "14:03", event: scenario.briefing, kind: "system" }
-    ]
+      { time: "14:03", event: scenario.briefing, kind: "system" },
+    ],
   };
 }
 
@@ -220,17 +437,24 @@ export function randomScenarioId(exclude?: IncidentScenario["id"]): IncidentScen
 }
 
 export function normalizePlan(state: MissionState, input: Partial<DecisionPlan>): DecisionPlan {
-  const actions = (input.actions ?? []).filter((action): action is MissionAction => state.scenario.availableActions.includes(action as MissionAction));
+  const actions = (input.actions ?? []).filter((action): action is MissionAction =>
+    state.scenario.availableActions.includes(action as MissionAction)
+  );
   return {
     headline: input.headline?.trim() || "Investigate and stabilize the incident",
     actions: actions.length > 0 ? [...new Set(actions)] : [state.scenario.availableActions[0]],
-    rationale: input.rationale?.trim() || "The Director requires additional evidence before expanding the response.",
+    rationale:
+      input.rationale?.trim() ||
+      "The Director requires additional evidence before expanding the response.",
     uncertainties: (input.uncertainties ?? []).filter(Boolean).slice(0, 3),
-    approvalScope: input.approvalScope?.trim() || "Authorize the selected stabilizing actions."
+    approvalScope: input.approvalScope?.trim() || "Authorize the selected stabilizing actions.",
   };
 }
 
-export function requestCommand(state: MissionState, planInput: Partial<DecisionPlan>): MissionState {
+export function requestCommand(
+  state: MissionState,
+  planInput: Partial<DecisionPlan>
+): MissionState {
   const next = structuredClone(state);
   const plan = normalizePlan(next, planInput);
   next.phase = "approval_required";
@@ -238,9 +462,16 @@ export function requestCommand(state: MissionState, planInput: Partial<DecisionP
   next.pendingCommand = {
     id: "cmd-" + plan.actions.join("-"),
     label: plan.actions.map((action) => actionLabels[action]).join(" + "),
-    consequence: plan.approvalScope
+    consequence: plan.approvalScope,
   };
-  next.timeline.push({ time: "14:05", event: "Mission Director requests commander authorization for: " + plan.actions.map((action) => actionLabels[action]).join("; ") + ".", kind: "approval" });
+  next.timeline.push({
+    time: "14:05",
+    event:
+      "Mission Director requests commander authorization for: " +
+      plan.actions.map((action) => actionLabels[action]).join("; ") +
+      ".",
+    kind: "approval",
+  });
   return next;
 }
 
@@ -250,7 +481,12 @@ export function approveCommand(state: MissionState, approved: boolean): MissionS
   next.pendingCommand = undefined;
   if (!approved) {
     next.phase = "assessment";
-    next.timeline.push({ time: "14:06", event: "Commander withheld authorization. The Mission Director must investigate an alternative.", kind: "approval" });
+    next.timeline.push({
+      time: "14:06",
+      event:
+        "Commander withheld authorization. The Mission Director must investigate an alternative.",
+      kind: "approval",
+    });
     return next;
   }
 
@@ -259,8 +495,18 @@ export function approveCommand(state: MissionState, approved: boolean): MissionS
   next.monitoringIntervals = 0;
   const complete = state.scenario.requiredActions.every((action) => actions.includes(action));
   next.outcome = complete ? "stabilized" : "degraded";
-  next.timeline.push({ time: "14:06", event: "Commander authorized: " + actions.map((action) => actionLabels[action]).join("; ") + ".", kind: "approval" });
-  next.timeline.push({ time: "14:06", event: "Actions dispatched. Mission Control is monitoring their effect before confirming the outcome.", kind: "system" });
+  next.timeline.push({
+    time: "14:06",
+    event:
+      "Commander authorized: " + actions.map((action) => actionLabels[action]).join("; ") + ".",
+    kind: "approval",
+  });
+  next.timeline.push({
+    time: "14:06",
+    event:
+      "Actions dispatched. Mission Control is monitoring their effect before confirming the outcome.",
+    kind: "system",
+  });
   return next;
 }
 
@@ -274,51 +520,207 @@ export function advanceMission(state: MissionState): MissionState {
   const interval = next.monitoringIntervals;
   next.telemetry = next.telemetry.map((reading) => {
     if (reading.label === "EVA crew" && actions.includes("recall_eva")) {
-      if (interval === 1) return { ...reading, value: "Return route acquired", status: "watch", detail: "Rover guidance is leading the crew onto route Bravo." };
-      if (interval === 2) return { ...reading, value: "1.2 km from habitat", status: "watch", detail: "Crew has cleared the exposed ridge and is approaching the airlock." };
-      return { ...reading, value: "Airlock secured", status: "nominal", detail: "Crew is safely inside the habitat." };
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "Return route acquired",
+          status: "watch",
+          detail: "Rover guidance is leading the crew onto route Bravo.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "1.2 km from habitat",
+          status: "watch",
+          detail: "Crew has cleared the exposed ridge and is approaching the airlock.",
+        };
+      return {
+        ...reading,
+        value: "Airlock secured",
+        status: "nominal",
+        detail: "Crew is safely inside the habitat.",
+      };
     }
     if (reading.label === "Traverse crew" && actions.includes("switch_to_backup_relay")) {
-      if (interval === 1) return { ...reading, value: "Beacon confirmed", status: "watch", detail: "Backup relay is acquiring the traverse signal." };
-      if (interval === 2) return { ...reading, value: "Voice link active", status: "watch", detail: "Crew has acknowledged the restored communications path." };
-      return { ...reading, value: "Voice link stable", status: "nominal", detail: "Backup relay now carries voice and low-rate telemetry." };
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "Beacon confirmed",
+          status: "watch",
+          detail: "Backup relay is acquiring the traverse signal.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "Voice link active",
+          status: "watch",
+          detail: "Crew has acknowledged the restored communications path.",
+        };
+      return {
+        ...reading,
+        value: "Voice link stable",
+        status: "nominal",
+        detail: "Backup relay now carries voice and low-rate telemetry.",
+      };
     }
     if (reading.label === "O₂ recycler" && actions.includes("isolate_scrubber")) {
-      if (interval === 1) return { ...reading, value: "Loop isolating", status: "critical", detail: "The unstable secondary scrubber is being taken offline." };
-      if (interval === 2) return { ...reading, value: "Primary loop stable", status: "watch", detail: "Cabin gas trend has stopped worsening." };
-      return { ...reading, value: "Primary loop nominal", status: "nominal", detail: "The isolated loop is no longer affecting cabin air processing." };
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "Loop isolating",
+          status: "critical",
+          detail: "The unstable secondary scrubber is being taken offline.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "Primary loop stable",
+          status: "watch",
+          detail: "Cabin gas trend has stopped worsening.",
+        };
+      return {
+        ...reading,
+        value: "Primary loop nominal",
+        status: "nominal",
+        detail: "The isolated loop is no longer affecting cabin air processing.",
+      };
     }
     if (reading.label === "Thermal loop" && actions.includes("deploy_repair_drone")) {
-      if (interval === 1) return { ...reading, value: "Drone outbound", status: "critical", detail: "Repair drone is moving toward the service-bay breach." };
-      if (interval === 2) return { ...reading, value: "Seal in progress", status: "watch", detail: "Sealant is being applied while pressure loss slows." };
-      return { ...reading, value: "78% pressure", status: "nominal", detail: "Pressure is recovering after the service-bay seal." };
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "Drone outbound",
+          status: "critical",
+          detail: "Repair drone is moving toward the service-bay breach.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "Seal in progress",
+          status: "watch",
+          detail: "Sealant is being applied while pressure loss slows.",
+        };
+      return {
+        ...reading,
+        value: "78% pressure",
+        status: "nominal",
+        detail: "Pressure is recovering after the service-bay seal.",
+      };
     }
     if (reading.label === "Repair drone" && actions.includes("deploy_repair_drone")) {
       const roverRecovery = state.scenario.id === "rover_recovery";
-      if (roverRecovery && interval === 1) return { ...reading, value: "Tow rig en route", status: "watch", detail: "Drone is flying to the crater with anchors and tow line." };
-      if (roverRecovery && interval === 2) return { ...reading, value: "Rover stabilized", status: "watch", detail: "Tow rig has anchored and is correcting the rover's wheel slip." };
-      if (roverRecovery) return { ...reading, value: "Recovery verified", status: "nominal", detail: "The rover has regained traction and can leave the crater." };
-      if (interval === 1) return { ...reading, value: "En route", status: "watch", detail: "Diagnostic arm and sealant cartridge are active." };
-      if (interval === 2) return { ...reading, value: "Applying sealant", status: "watch", detail: "The drone is sealing the service-bay line." };
-      return { ...reading, value: "Seal verified", status: "nominal", detail: "The drone has completed the pressure verification pass." };
+      if (roverRecovery && interval === 1)
+        return {
+          ...reading,
+          value: "Tow rig en route",
+          status: "watch",
+          detail: "Drone is flying to the crater with anchors and tow line.",
+        };
+      if (roverRecovery && interval === 2)
+        return {
+          ...reading,
+          value: "Rover stabilized",
+          status: "watch",
+          detail: "Tow rig has anchored and is correcting the rover's wheel slip.",
+        };
+      if (roverRecovery)
+        return {
+          ...reading,
+          value: "Recovery verified",
+          status: "nominal",
+          detail: "The rover has regained traction and can leave the crater.",
+        };
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "En route",
+          status: "watch",
+          detail: "Diagnostic arm and sealant cartridge are active.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "Applying sealant",
+          status: "watch",
+          detail: "The drone is sealing the service-bay line.",
+        };
+      return {
+        ...reading,
+        value: "Seal verified",
+        status: "nominal",
+        detail: "The drone has completed the pressure verification pass.",
+      };
     }
     if (reading.label === "Habitat battery" && actions.includes("shed_nonessential_load")) {
-      if (interval === 1) return { ...reading, value: "Load shedding active", status: "watch", detail: "Greenhouse and laboratory systems are powering down." };
-      if (interval === 2) return { ...reading, value: "Reserve protected", status: "watch", detail: "Nonessential load is offline and the reserve is holding." };
-      return { ...reading, value: "Reserve stable", status: "nominal", detail: "The protected reserve can support the required response." };
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "Load shedding active",
+          status: "watch",
+          detail: "Greenhouse and laboratory systems are powering down.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "Reserve protected",
+          status: "watch",
+          detail: "Nonessential load is offline and the reserve is holding.",
+        };
+      return {
+        ...reading,
+        value: "Reserve stable",
+        status: "nominal",
+        detail: "The protected reserve can support the required response.",
+      };
     }
-    if ((reading.label === "Backup relay" || reading.label === "Comms relay") && actions.includes("switch_to_backup_relay")) {
-      if (interval === 1) return { ...reading, value: "Booting", status: "watch", detail: "The backup communications path is coming online." };
-      if (interval === 2) return { ...reading, value: "Voice link active", status: "watch", detail: "Low-rate voice and telemetry are being routed through backup." };
-      return { ...reading, value: "Online", status: "nominal", detail: "Backup communications are stable for the current response." };
+    if (
+      (reading.label === "Backup relay" || reading.label === "Comms relay") &&
+      actions.includes("switch_to_backup_relay")
+    ) {
+      if (interval === 1)
+        return {
+          ...reading,
+          value: "Booting",
+          status: "watch",
+          detail: "The backup communications path is coming online.",
+        };
+      if (interval === 2)
+        return {
+          ...reading,
+          value: "Voice link active",
+          status: "watch",
+          detail: "Low-rate voice and telemetry are being routed through backup.",
+        };
+      return {
+        ...reading,
+        value: "Online",
+        status: "nominal",
+        detail: "Backup communications are stable for the current response.",
+      };
     }
     return reading;
   });
   if (next.monitoringIntervals >= 3) {
     next.phase = "resolved";
-    next.timeline.push({ time: "14:18", event: next.outcome === "stabilized" ? "Three monitoring reports confirm the response is stable before the impact window." : "Three monitoring reports confirm a degraded response; follow-up intervention is required.", kind: "system" });
+    next.timeline.push({
+      time: "14:18",
+      event:
+        next.outcome === "stabilized"
+          ? "Three monitoring reports confirm the response is stable before the impact window."
+          : "Three monitoring reports confirm a degraded response; follow-up intervention is required.",
+      kind: "system",
+    });
   } else {
-    next.timeline.push({ time: "14:10", event: "Monitoring report " + next.monitoringIntervals + " of 3 received. Impact window now estimated in " + next.minutesToImpact + " minutes.", kind: "system" });
+    next.timeline.push({
+      time: "14:10",
+      event:
+        "Monitoring report " +
+        next.monitoringIntervals +
+        " of 3 received. Impact window now estimated in " +
+        next.minutesToImpact +
+        " minutes.",
+      kind: "system",
+    });
   }
   return next;
 }

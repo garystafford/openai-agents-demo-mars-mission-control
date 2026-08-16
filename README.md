@@ -69,7 +69,17 @@ docker rm phoenix          # Remove the stopped container
 
 ## Validate
 
-Run npm run check, npm run eval, and npm run build.
+Run the complete local verification suite:
+
+```bash
+npm run lint          # ESLint for TypeScript and React code-quality checks
+npm run format:check  # Verify Prettier formatting without modifying files
+npm run check         # TypeScript checks for client and server
+npm run eval          # Deterministic mission-simulator evaluations
+npm run build         # Production client and server build
+```
+
+Use `npm run format` to apply the project formatting style locally.
 
 ## Next capabilities
 
