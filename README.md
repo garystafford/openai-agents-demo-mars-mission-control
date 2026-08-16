@@ -1,9 +1,38 @@
 # Mars Mission Control
 
-An interactive multi-agent mission simulator built with the OpenAI Agents SDK.
+An interactive multi-agent mission simulator built with the
+[OpenAI Agents SDK](https://openai.github.io/openai-agents-js/).
 You are the commander of a Mars habitat responding to one of five randomized
 incidents, including dust storms, a coolant leak, a solar flare, and a stranded
 rover recovery, each with incomplete evidence and different trade-offs.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="docs/images/mission-console.png">
+        <img src="docs/images/mission-console.png" alt="Mars Mission Control dashboard showing a dust-storm incident" />
+      </a>
+      <br />
+      <strong>Mission command interface</strong>
+    </td>
+    <td width="50%" valign="top">
+      <a href="docs/images/phoenix-tracing.png">
+        <img src="docs/images/phoenix-tracing.png" alt="Arize Phoenix trace view showing the mission-agent workflow" />
+      </a>
+      <br />
+      <strong>Phoenix trace detail</strong>
+    </td>
+  </tr>
+</table>
+
+## Technology
+
+- [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/), and [Vite](https://vite.dev/) for the interactive client
+- [Express](https://expressjs.com/) for the local mission API and server-sent event stream
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) for specialist orchestration, tools, sessions, and structured outputs
+- [Arize Phoenix](https://arize.com/docs/phoenix/) and [OpenInference](https://arize-ai.github.io/openinference/) for optional agent tracing
 
 ## What it demonstrates
 
