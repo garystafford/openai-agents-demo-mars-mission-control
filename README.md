@@ -1,4 +1,4 @@
-# Mars Mission Control
+# OpenAI Agents Demo: Mars Mission Control
 
 An interactive multi-agent mission simulator built with the
 [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/).
