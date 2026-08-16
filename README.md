@@ -8,41 +8,33 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 ## Screenshots
 
-#### 1. Mission Control
+**1. Mission Control**
 
-<a href="docs/images/mission-console.png">
-  <img src="docs/images/mission-console.png" alt="Mars Mission Control dashboard showing a dust-storm incident" />
-</a>
+![Mars Mission Control dashboard showing a dust-storm incident](docs/images/mission-console.png)
 
-#### 2. HITL interaction
+**2. HITL interaction**
 
-<a href="docs/images/hitl-approval.png">
-  <img src="docs/images/hitl-approval.png" alt="Authorize the proposed actions" />
-</a>
+![Authorize the proposed actions](docs/images/hitl-approval.png)
 
-#### 3. Team activity
+**3. Team activity**
 
-<a href="docs/images/team-activity.png">
-  <img src="docs/images/team-activity.png" alt="Team activity, specialist assessments, and the completed agent interaction flow" />
-</a>
+![Team activity, specialist assessments, and the completed agent interaction flow](docs/images/team-activity.png)
 
-#### 4. OpenAI Agents SDK features
+**4. OpenAI Agents SDK features**
 
-<a href="docs/images/agents-sdk-overview.png">
-  <img src="docs/images/agents-sdk-overview.png" alt="Technical overview showing the OpenAI Agents SDK features demonstrated by the mission" />
-</a>
+![Technical overview showing the OpenAI Agents SDK features demonstrated by the mission](docs/images/agents-sdk-overview.png)
 
-#### 5. Mission team
+**5. Mission team**
 
-<a href="docs/images/mission-team.png">
-  <img src="docs/images/mission-team.png" alt="Command structure showing the Mission Director and four specialized agents" />
-</a>
+![Command structure showing the Mission Director and four specialized agents](docs/images/mission-team.png)
 
-#### 6. Phoenix tracing
+**6. Phoenix tracing**
 
-<a href="docs/images/phoenix-tracing.png">
-  <img src="docs/images/phoenix-tracing.png" alt="Arize Phoenix trace view showing the mission-agent workflow" />
-</a>
+![Arize Phoenix trace view showing the mission-agent workflow](docs/images/phoenix-tracing.png)
+
+**7. Phoenix metrics**
+
+![Arize Phoenix showing metrics](docs/images/phoenix-metrics.png)
 
 ## Technology
 
