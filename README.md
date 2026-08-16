@@ -1,18 +1,19 @@
 # Mission Control: Ares-7
 
 An interactive multi-agent mission simulator built with the OpenAI Agents SDK.
-You are the commander of a Mars habitat as a dust storm, a failing oxygen
-recycler, reduced solar power, and an EVA crew create competing priorities.
+You are the commander of a Mars habitat responding to a dust storm, a coolant
+leak, or a relay failure—each with incomplete evidence and different trade-offs.
 
 ## What it demonstrates
 
-- A Mission Director calling four specialists through Agent.asTool()
-- Typed function tools for telemetry and mission-protocol retrieval
-- An SDK MemorySession to preserve multi-turn command context
+- A Mission Director choosing relevant specialists through Agent.asTool(), rather than mechanically calling all four
+- Typed function tools for telemetry, protocol retrieval, and independent verification
+- A structured decision plan with actions, rationale, uncertainty, and approval scope
+- An SDK MemorySession that scopes the team investigation
 - A streamed Team Record that exposes the Director's coordination, evidence retrieval, and specialist submissions as they happen
 - A visible human approval gate before the simulated command is applied
-- A deterministic mission simulator and trace ledger for repeatable demos
-- Focused evaluation cases for assessment, approval, and safe resume behavior
+- A deterministic simulator where the selected plan produces a stabilized or degraded outcome
+- Focused evaluation cases for scenarios, authorization, and outcome behavior
 
 ## Run it
 
@@ -21,6 +22,11 @@ Run npm install, then npm run dev.
 Open http://localhost:5173. The server reads OPENAI_API_KEY from .env.local;
 it is only used when you select Get mission team assessment. The rest of the
 simulator runs locally and deterministically.
+
+Copy `.env.example` to `.env.local` if you are setting up a new machine. It
+also defines a model and reasoning-effort profile for each mission role. The
+server reads those values at startup; restart it after changing them. The
+Command Structure panel displays the active, non-secret profiles.
 
 ## Phoenix tracing
 
@@ -55,10 +61,10 @@ docker rm phoenix          # Remove the stopped container
 ## Demo sequence
 
 1. Select **Get mission team assessment**.
-2. Watch **Team activity** as the Director asks specialists for evidence and they submit assessments.
-3. Read the Director’s recommendation, then select **Review proposed command**.
-4. Authorize it, then advance the mission clock.
-5. Review the team record and the resulting system state.
+2. Watch **Team activity** as the Director chooses specialists and evidence sources for this incident.
+3. Read the structured recommendation, including its remaining uncertainties.
+4. Select **Review proposed command**, authorize it, then advance the mission clock.
+5. Review the team record and whether the selected plan stabilized the incident.
 
 ## Validate
 
