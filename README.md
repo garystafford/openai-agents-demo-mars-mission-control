@@ -6,6 +6,24 @@ You are the commander of a Mars habitat responding to one of five randomized
 incidents, including dust storms, a coolant leak, a solar flare, and a stranded
 rover recovery, each with incomplete evidence and different trade-offs.
 
+## Technology
+
+- [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/), and [Vite](https://vite.dev/) for the interactive client
+- [Express](https://expressjs.com/) for the local mission API and server-sent event stream
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) for specialist orchestration, tools, sessions, and structured outputs
+- [Arize Phoenix](https://arize.com/docs/phoenix/) and [OpenInference](https://arize-ai.github.io/openinference/) for optional agent tracing
+
+## What it demonstrates
+
+- A Mission Director choosing relevant specialists through Agent.asTool(), rather than mechanically calling all four
+- Typed function tools for telemetry, protocol retrieval, and independent verification
+- A structured decision plan with actions, rationale, uncertainty, and approval scope
+- An SDK MemorySession that scopes the team investigation
+- A streamed Team Record that exposes the Director's coordination, evidence retrieval, and specialist submissions as they happen
+- A visible human approval gate before the simulated command is applied
+- A deterministic simulator where the selected plan produces a stabilized or degraded outcome
+- Focused evaluation cases for scenarios, authorization, and outcome behavior
+
 ## Screenshots
 
 **1. Mission Control**
@@ -35,24 +53,6 @@ rover recovery, each with incomplete evidence and different trade-offs.
 **7. Phoenix metrics**
 
 ![Arize Phoenix showing metrics](docs/images/phoenix-metrics.png)
-
-## Technology
-
-- [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/), and [Vite](https://vite.dev/) for the interactive client
-- [Express](https://expressjs.com/) for the local mission API and server-sent event stream
-- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) for specialist orchestration, tools, sessions, and structured outputs
-- [Arize Phoenix](https://arize.com/docs/phoenix/) and [OpenInference](https://arize-ai.github.io/openinference/) for optional agent tracing
-
-## What it demonstrates
-
-- A Mission Director choosing relevant specialists through Agent.asTool(), rather than mechanically calling all four
-- Typed function tools for telemetry, protocol retrieval, and independent verification
-- A structured decision plan with actions, rationale, uncertainty, and approval scope
-- An SDK MemorySession that scopes the team investigation
-- A streamed Team Record that exposes the Director's coordination, evidence retrieval, and specialist submissions as they happen
-- A visible human approval gate before the simulated command is applied
-- A deterministic simulator where the selected plan produces a stabilized or degraded outcome
-- Focused evaluation cases for scenarios, authorization, and outcome behavior
 
 ## Run it
 
