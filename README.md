@@ -8,31 +8,37 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 ## Screenshots
 
-### 1. Mission Control
+#### 1. Mission Control
 
 <a href="docs/images/mission-console.png">
   <img src="docs/images/mission-console.png" alt="Mars Mission Control dashboard showing a dust-storm incident" />
 </a>
 
-### 2. Team activity
+#### 2. HITL interaction
+
+<a href="docs/images/hitl-approval.png">
+  <img src="docs/images/hitl-approval.png" alt="Authorize the proposed actions" />
+</a>
+
+#### 3. Team activity
 
 <a href="docs/images/team-activity.png">
   <img src="docs/images/team-activity.png" alt="Team activity, specialist assessments, and the completed agent interaction flow" />
 </a>
 
-### 3. OpenAI Agents SDK features
+#### 4. OpenAI Agents SDK features
 
 <a href="docs/images/agents-sdk-overview.png">
   <img src="docs/images/agents-sdk-overview.png" alt="Technical overview showing the OpenAI Agents SDK features demonstrated by the mission" />
 </a>
 
-### 4. Mission team
+#### 5. Mission team
 
 <a href="docs/images/mission-team.png">
   <img src="docs/images/mission-team.png" alt="Command structure showing the Mission Director and four specialized agents" />
 </a>
 
-### 5. Phoenix tracing
+#### 6. Phoenix tracing
 
 <a href="docs/images/phoenix-tracing.png">
   <img src="docs/images/phoenix-tracing.png" alt="Arize Phoenix trace view showing the mission-agent workflow" />
@@ -127,3 +133,7 @@ The scaffolding deliberately keeps external systems simulated. The natural next
 increment is a Mission Control MCP server for telemetry and inventory, followed
 by a SandboxAgent counterfactual analyst that writes scenario artifacts in an
 isolated workspace.
+
+---
+
+_The contents of this repository represent my viewpoints and not those of my past or current employers, including Amazon Web Services (AWS). All third-party libraries, modules, plugins, and SDKs are the property of their respective owners._
