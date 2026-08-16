@@ -158,7 +158,7 @@ const scenarios: Record<IncidentScenario["id"], IncidentScenario> = {
     id: "coolant_leak",
     title: "Habitat Coolant Leak",
     briefing:
-      "A coolant leak is spreading through the thermal loop. The habitat is warm, a repair drone is available, and the crew is inside—but isolating the loop may black out communications.",
+      "A coolant leak is spreading through the thermal loop. The habitat is warm, a repair drone is available, and the crew is inside, but isolating the loop may black out communications.",
     minutesToImpact: 24,
     activeRisks: [
       "Thermal loop pressure is falling",

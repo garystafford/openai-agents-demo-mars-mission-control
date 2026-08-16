@@ -1,9 +1,9 @@
-# Mission Control: Ares-7
+# Mars Mission Control
 
 An interactive multi-agent mission simulator built with the OpenAI Agents SDK.
 You are the commander of a Mars habitat responding to one of five randomized
-incidents—including dust storms, a coolant leak, a solar flare, and a stranded
-rover recovery—each with incomplete evidence and different trade-offs.
+incidents, including dust storms, a coolant leak, a solar flare, and a stranded
+rover recovery, each with incomplete evidence and different trade-offs.
 
 ## What it demonstrates
 

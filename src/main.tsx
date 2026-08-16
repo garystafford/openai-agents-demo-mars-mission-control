@@ -612,7 +612,7 @@ function App() {
                   onClick={() => void act("advance", "/api/mission/advance")}
                   disabled={Boolean(busy)}
                 >
-                  Advance 4-minute interval — receive report{" "}
+                  Advance 4-minute interval to receive report{" "}
                   {Math.min(mission.monitoringIntervals + 1, 3)}
                 </button>
               </>
