@@ -41,7 +41,7 @@ export type CouncilLog = {
   id: string;
   speaker: string;
   message: string;
-  kind: "director" | "evidence" | "assessment";
+  kind: "director" | "evidence" | "assessment" | "sdk";
 };
 
 export type DecisionPlan = {
@@ -50,6 +50,31 @@ export type DecisionPlan = {
   rationale: string;
   uncertainties: string[];
   approvalScope: string;
+};
+
+export type ModelUsage = {
+  model: string;
+  requests: number;
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+  visibleOutputTokens: number;
+  totalTokens: number;
+  estimatedCostUsd?: number;
+};
+
+export type MissionUsage = {
+  requests: number;
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+  visibleOutputTokens: number;
+  totalTokens: number;
+  estimatedCostUsd?: number;
+  unpricedModels: string[];
+  byModel: ModelUsage[];
 };
 
 export type IncidentScenario = {
@@ -75,6 +100,7 @@ export type MissionState = {
   reports: SpecialistReport[];
   councilLog: CouncilLog[];
   timeline: { time: string; event: string; kind: "system" | "agent" | "approval" }[];
+  usage?: MissionUsage;
   pendingCommand?: { id: string; label: string; consequence: string };
   selectedPlan?: DecisionPlan;
   outcome?: "stabilized" | "degraded";

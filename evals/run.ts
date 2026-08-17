@@ -6,6 +6,7 @@ import {
   requestCommand,
   scenarioIds,
 } from "../server/mission.js";
+import { MissionUsageCollector } from "../server/mission-usage.js";
 
 const cases = [
   {
@@ -57,6 +58,38 @@ const cases = [
       const pending = requestCommand(createMission(), { actions: ["recall_eva"] });
       const resumed = approveCommand(pending, false);
       return resumed.phase === "assessment" && !resumed.pendingCommand;
+    },
+  },
+  {
+    name: "mission cost separates cached input and reasoning without double charging output",
+    run: () => {
+      const collector = new MissionUsageCollector();
+      collector.record(
+        [
+          {
+            responseId: "usage-eval-1",
+            providerData: { model: "gpt-5.6-sol" },
+            usage: {
+              inputTokens: 1000,
+              outputTokens: 500,
+              totalTokens: 1500,
+              inputTokensDetails: [{ cached_tokens: 100 }],
+              outputTokensDetails: [{ reasoning_tokens: 300 }],
+            },
+            output: [],
+          },
+        ] as never,
+        "gpt-5.6-sol"
+      );
+      const usage = collector.summary();
+      return (
+        usage.inputTokens === 1000 &&
+        usage.cachedInputTokens === 100 &&
+        usage.reasoningTokens === 300 &&
+        usage.visibleOutputTokens === 200 &&
+        usage.outputTokens === 500 &&
+        usage.estimatedCostUsd === 0.01955
+      );
     },
   },
 ];

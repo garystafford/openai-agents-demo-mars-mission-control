@@ -37,6 +37,21 @@ button:hover:not(:disabled) {
   transform: translateY(-1px);
   background: #63e8d5;
 }
+button.affirmative {
+  background: #45bd7e;
+  color: #04150e;
+}
+button.affirmative:hover:not(:disabled) {
+  background: #63d897;
+}
+button.caution {
+  background: #a97930;
+  color: #fff2d0;
+  border: 1px solid #d5a34d;
+}
+button.caution:hover:not(:disabled) {
+  background: #c08d39;
+}
 button:disabled {
   cursor: wait;
   opacity: 0.55;
@@ -369,33 +384,68 @@ h2 {
   background: #4d9691;
 }
 .flow-specialists {
+  --branch-inset: 0%;
   position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
-  gap: 0.5rem;
-  padding-top: 12px;
+  grid-template-columns: repeat(var(--specialist-count, 1), minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.85rem 0;
 }
-.flow-specialists::before {
+.flow-specialists[data-count="2"] {
+  --specialist-count: 2;
+  --branch-inset: 25%;
+}
+.flow-specialists[data-count="3"] {
+  --specialist-count: 3;
+  --branch-inset: 16.6667%;
+}
+.flow-specialists[data-count="4"] {
+  --specialist-count: 4;
+  --branch-inset: 12.5%;
+}
+.flow-specialists::before,
+.flow-specialists::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 12%;
-  right: 12%;
+  left: var(--branch-inset);
+  right: var(--branch-inset);
   height: 1px;
   background: #4d9691;
 }
-.flow-specialist::before {
+.flow-specialists::before {
+  top: 0;
+}
+.flow-specialists::after {
+  bottom: 0;
+}
+.flow-specialist::before,
+.flow-specialist::after {
   content: "";
   position: absolute;
   width: 1px;
-  height: 12px;
-  top: -13px;
+  height: 0.85rem;
   left: 50%;
   background: #4d9691;
+}
+.flow-specialist::before {
+  top: -0.85rem;
+}
+.flow-specialist::after {
+  bottom: -0.85rem;
 }
 .flow-specialist {
   padding: 0.55rem 0.35rem;
   border-left: 3px solid #57d8c6;
+}
+.flow-specialists[data-count="1"] {
+  --specialist-count: 1;
+  padding: 0;
+}
+.flow-specialists[data-count="1"]::before,
+.flow-specialists[data-count="1"]::after,
+.flow-specialists[data-count="1"] .flow-specialist::before,
+.flow-specialists[data-count="1"] .flow-specialist::after {
+  display: none;
 }
 .flow-specialist span {
   color: #61e1d0;
@@ -773,11 +823,16 @@ h2 {
 .brief {
   border-color: #3f7d74;
 }
+.brief h2 {
+  font-size: 0.98rem;
+  font-weight: 680;
+  line-height: 1.25;
+}
 .brief > p:not(.uncertainties) {
   white-space: pre-wrap;
   color: #b9d0d0;
-  line-height: 1.5;
-  font-size: 0.9rem;
+  line-height: 1.48;
+  font-size: 0.84rem;
   margin: 0.75rem 0 0;
 }
 .plan-actions {
@@ -817,6 +872,9 @@ h2 {
 .council-record li.assessment {
   border-left-color: #9e9cff;
 }
+.council-record li.sdk {
+  border-left-color: #62b7ff;
+}
 .council-record li .activity-speaker {
   display: flex;
   align-items: center;
@@ -832,6 +890,9 @@ h2 {
 }
 .council-record li.assessment .activity-speaker {
   color: #bbb8ff;
+}
+.council-record li.sdk .activity-speaker {
+  color: #83c7ff;
 }
 .council-record li p {
   color: #b0c7c8;
@@ -872,6 +933,88 @@ h2 {
 }
 .timeline li span.approval {
   background: #ffbd66;
+}
+.mission-cost {
+  border-color: #396c72;
+}
+.cost-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.cost-heading > strong {
+  color: #ffcd77;
+  font:
+    700 1.05rem ui-monospace,
+    monospace;
+  white-space: nowrap;
+}
+.cost-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0.9rem 0 0.7rem;
+}
+.cost-metrics div {
+  padding: 0.45rem 0.5rem;
+  border: 1px solid #1d4850;
+  border-radius: 6px;
+  background: #0a2026;
+}
+.cost-metrics span,
+.cost-note,
+.cost-warning {
+  color: #88a5a7;
+  font-size: 0.69rem;
+  line-height: 1.35;
+}
+.cost-metrics strong {
+  display: block;
+  margin-top: 0.15rem;
+  color: #d5e6e5;
+  font-size: 0.88rem;
+}
+.cost-note,
+.cost-warning {
+  margin: 0.35rem 0 0;
+}
+.cost-warning {
+  color: #e2bf7a;
+}
+.cost-breakdown {
+  margin-top: 0.75rem;
+  border-top: 1px solid #1e444b;
+  padding-top: 0.6rem;
+}
+.cost-breakdown summary {
+  cursor: pointer;
+  color: #9ec0c0;
+  font-size: 0.72rem;
+}
+.cost-breakdown ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cost-breakdown li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: #8fa9aa;
+  font-size: 0.68rem;
+}
+.cost-breakdown li strong {
+  color: #c3dddd;
+  font-weight: 600;
+}
+.cost-breakdown li em {
+  color: #d3bd88;
+  font-style: normal;
+  white-space: nowrap;
 }
 .error {
   background: #4a2028;

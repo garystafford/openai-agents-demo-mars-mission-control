@@ -17,7 +17,7 @@ type CouncilEntry = {
   id: string;
   speaker: string;
   message: string;
-  kind: "director" | "evidence" | "assessment";
+  kind: "director" | "evidence" | "assessment" | "sdk";
 };
 type DecisionPlan = {
   headline: string;
@@ -25,6 +25,29 @@ type DecisionPlan = {
   rationale: string;
   uncertainties: string[];
   approvalScope: string;
+};
+type ModelUsage = {
+  model: string;
+  requests: number;
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+  visibleOutputTokens: number;
+  totalTokens: number;
+  estimatedCostUsd?: number;
+};
+type MissionUsage = {
+  requests: number;
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+  visibleOutputTokens: number;
+  totalTokens: number;
+  estimatedCostUsd?: number;
+  unpricedModels: string[];
+  byModel: ModelUsage[];
 };
 const actionLabels: Record<string, string> = {
   recall_eva: "Recall EVA crew",
@@ -70,6 +93,7 @@ type Mission = {
   pendingCommand?: { id: string; label: string; consequence: string };
   selectedPlan?: DecisionPlan;
   outcome?: "stabilized" | "degraded";
+  usage?: MissionUsage;
   agentProfiles: Record<string, { model: string; reasoningEffort: string }>;
 };
 
@@ -91,6 +115,84 @@ function Badge({ status }: { status: Status }) {
 function AgentMark({ name }: { name: string }) {
   const mark = name === "Mission Director" ? "director" : name.toLowerCase();
   return <i className={"agent-mark mark-" + mark} aria-hidden="true" />;
+}
+
+const tokenFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 4,
+});
+
+function MissionCost({ usage }: { usage: MissionUsage }) {
+  const estimatedCostUsd = usage.estimatedCostUsd;
+  return (
+    <section className="panel mission-cost">
+      <div className="cost-heading">
+        <div>
+          <p className="eyebrow">Mission usage</p>
+          <h2>Token and cost estimate</h2>
+        </div>
+        <strong>
+          {estimatedCostUsd === undefined ? "Unpriced" : currencyFormatter.format(estimatedCostUsd)}
+        </strong>
+      </div>
+      <div className="cost-metrics">
+        <div>
+          <span>Input</span>
+          <strong>{tokenFormatter.format(usage.inputTokens)}</strong>
+        </div>
+        <div>
+          <span>Reasoning</span>
+          <strong>{tokenFormatter.format(usage.reasoningTokens)}</strong>
+        </div>
+        <div>
+          <span>Visible output</span>
+          <strong>{tokenFormatter.format(usage.visibleOutputTokens)}</strong>
+        </div>
+        <div>
+          <span>API requests</span>
+          <strong>{usage.requests}</strong>
+        </div>
+      </div>
+      <p className="cost-note">
+        {tokenFormatter.format(usage.totalTokens)} total tokens ·{" "}
+        {tokenFormatter.format(usage.cachedInputTokens)} cached input. Reasoning is included in
+        output, not added twice.
+      </p>
+      {usage.unpricedModels.length > 0 ? (
+        <p className="cost-warning">
+          Add pricing overrides for {usage.unpricedModels.join(", ")} to calculate the full
+          estimate.
+        </p>
+      ) : (
+        <p className="cost-note">Estimated at standard direct-API token rates.</p>
+      )}
+      <details className="cost-breakdown">
+        <summary>Model breakdown</summary>
+        <ul>
+          {usage.byModel.map((model) => (
+            <li key={model.model}>
+              <span>
+                <strong>{model.model}</strong>
+                {model.requests} request{model.requests === 1 ? "" : "s"} ·{" "}
+                {tokenFormatter.format(model.totalTokens)} tokens
+              </span>
+              <em>
+                {model.estimatedCostUsd === undefined
+                  ? "Pricing unavailable"
+                  : currencyFormatter.format(model.estimatedCostUsd)}
+              </em>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </section>
+  );
 }
 
 function InteractionMap({
@@ -148,7 +250,7 @@ function InteractionMap({
           Run an assessment to see the Director’s actual delegation path.
         </div>
       ) : (
-        <div className="flow-specialists">
+        <div className="flow-specialists" data-count={selected.length}>
           {selected.map((member) => (
             <div className="flow-specialist" key={member.name}>
               <span>
@@ -438,11 +540,11 @@ function App() {
                 </p>
               </article>
               <article>
-                <h3>Typed function tools</h3>
+                <h3>Mission Control MCP</h3>
                 <p>
-                  Specialists call typed tools for telemetry, protocol lookup, and independent
-                  orbital, maintenance, or crew verification. The evidence they choose can differ by
-                  incident.
+                  Specialists access telemetry, protocol lookup, and independent verification
+                  through a local stdio MCP server. The Director still chooses which specialists
+                  need that evidence for each incident.
                 </p>
               </article>
               <article>
@@ -464,16 +566,25 @@ function App() {
               <article>
                 <h3>Observable run activity</h3>
                 <p>
-                  The application streams selected observable events over server-sent events:
-                  evidence reads, verification requests, and structured specialist submissions. It
+                  The application streams selected Agents SDK run events over server-sent events:
+                  delegation, MCP tool calls, approvals, and structured specialist submissions. It
                   intentionally does not expose private model reasoning.
                 </p>
               </article>
               <article>
-                <h3>Human authorization</h3>
+                <h3>Mission usage and cost</h3>
                 <p>
-                  The authorization card is an application-level safety checkpoint. The Director may
-                  recommend a plan, but only the commander can permit the simulated actions.
+                  SDK response usage is accumulated across the Director, specialists, reassessment,
+                  and approval resume. The Mission Record separates input, cached input, reasoning,
+                  and visible output tokens, then estimates direct-API cost by model.
+                </p>
+              </article>
+              <article>
+                <h3>Guardrails and human authorization</h3>
+                <p>
+                  Tool input and final-output guardrails reject plans missing critical actions. The
+                  Director’s <code>submit_mission_plan</code> tool uses <code>needsApproval</code>,
+                  so the SDK pauses and resumes the same run only after the commander decides.
                 </p>
               </article>
               <article>
@@ -582,11 +693,11 @@ function App() {
               </>
             ) : mission.pendingCommand ? (
               <>
-                <p className="eyebrow">Your decision is required</p>
+                <p className="eyebrow">SDK approval interruption</p>
                 <h2>Authorize the proposed actions</h2>
                 <p className="muted">
-                  The team has completed its work. Your authorization is required before the
-                  simulator carries out any action.
+                  The Director’s submit_mission_plan tool call is paused in the Agents SDK. Your
+                  authorization resumes or rejects that same run before the simulator can act.
                 </p>
                 <div className="authorization-details">
                   <strong>{mission.pendingCommand.label}</strong>
@@ -683,6 +794,16 @@ function App() {
                 </label>
                 <div className="button-row">
                   <button
+                    className="affirmative"
+                    onClick={() =>
+                      void act("approval", "/api/mission/request-approval", { plan: activePlan })
+                    }
+                    disabled={Boolean(busy)}
+                  >
+                    Submit for authorization
+                  </button>
+                  <button
+                    className="caution"
                     onClick={() => {
                       if (reviewRequest.trim()) void conveneCouncil(reviewRequest, activePlan);
                       else setError("Enter a question or choose a review prompt first.");
@@ -691,24 +812,15 @@ function App() {
                   >
                     {busy === "council" ? "Director is reassessing…" : "Ask Director to reassess"}
                   </button>
-                  <button
-                    className="secondary"
-                    onClick={() =>
-                      void act("approval", "/api/mission/request-approval", { plan: activePlan })
-                    }
-                    disabled={Boolean(busy)}
-                  >
-                    Submit for authorization
-                  </button>
                 </div>
               </>
             ) : (
               <>
-                <p className="eyebrow">Team assessment ready</p>
+                <p className="eyebrow">SDK plan submission paused</p>
                 <h2>Review the proposed plan</h2>
                 <p className="muted">
-                  Inspect the actions, question the evidence, or ask for an alternative before
-                  submitting anything for authorization.
+                  Inspect the actions, question the evidence, or ask for an alternative. The SDK is
+                  holding the Director’s plan-submission tool call until you decide.
                 </p>
                 <button onClick={() => setReviewMode(true)} disabled={Boolean(busy)}>
                   Open plan review
@@ -782,6 +894,7 @@ function App() {
                 ))}
             </ol>
           </section>
+          {mission.usage && <MissionCost usage={mission.usage} />}
         </div>
         <aside className="operations-column">
           <InteractionMap

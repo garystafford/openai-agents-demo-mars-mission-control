@@ -10,17 +10,20 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 - [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/), and [Vite](https://vite.dev/) for the interactive client
 - [Express](https://expressjs.com/) for the local mission API and server-sent event stream
-- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) for specialist orchestration, tools, sessions, and structured outputs
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) for specialist orchestration, sessions, structured outputs, guardrails, streaming, and native approval interruptions
+- [Model Context Protocol](https://modelcontextprotocol.io/) for the local Mission Control MCP server that supplies telemetry, protocols, and verification
 - [Arize Phoenix](https://arize.com/docs/phoenix/) and [OpenInference](https://arize-ai.github.io/openinference/) for optional agent tracing
 
 ## What it demonstrates
 
 - A Mission Director choosing relevant specialists through Agent.asTool(), rather than mechanically calling all four
-- Typed function tools for telemetry, protocol retrieval, and independent verification
+- A local stdio Mission Control MCP server for telemetry, protocol retrieval, and independent verification
 - A structured decision plan with actions, rationale, uncertainty, and approval scope
 - An SDK MemorySession that scopes the team investigation
-- A streamed Team Record that exposes the Director's coordination, evidence retrieval, and specialist submissions as they happen
-- A visible human approval gate before the simulated command is applied
+- SDK run-item streaming into the Team Record, without exposing private model reasoning
+- Mission-level token usage and an estimated direct-API cost, including input, cached input, reasoning, and visible output tokens
+- Tool input and final-output guardrails that reject plans missing scenario-critical actions
+- A native `needsApproval` interruption that pauses `submit_mission_plan`; the commander resumes or rejects the same SDK `RunState`
 - A deterministic simulator where the selected plan produces a stabilized or degraded outcome
 - Focused evaluation cases for scenarios, authorization, and outcome behavior
 
@@ -28,7 +31,11 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 **1. Mission Control**
 
-![Mars Mission Control dashboard showing a dust-storm incident](docs/images/mission-console.png)
+![Mars Mission Control dashboard](docs/images/mission-console-1.png)
+
+![Mars Mission Control dashboard](docs/images/mission-console-2.png)
+
+![Mars Mission Control dashboard](docs/images/mission-console-3.png)
 
 **2. HITL interaction**
 
@@ -67,6 +74,44 @@ also defines a model and reasoning-effort profile for each mission role. The
 server reads those values at startup; restart it after changing them. The
 Command Structure panel displays the active, non-secret profiles.
 
+## Mission token and cost accounting
+
+After an assessment, the **Mission usage** card shows cumulative usage for the
+Mission Director and only the specialists the Director selected. It updates
+again if the commander asks for a reassessment or resumes the approval step.
+
+The card reports:
+
+- API request count and total tokens for the mission
+- Input and cached-input tokens
+- Output tokens, with reasoning and visible output shown separately
+- An estimated USD cost, plus a per-model breakdown
+
+Reasoning tokens are reported separately for visibility but are already part of
+output tokens, so the calculator does not charge them twice. The estimate is:
+
+```text
+((input tokens - cached input tokens) × input rate
+ + cached input tokens × cached-input rate
+ + output tokens × output rate) / 1,000,000
+```
+
+The application includes standard direct-API rates for its default demo models.
+See the [OpenAI pricing page](https://developers.openai.com/api/docs/pricing)
+for current rates.
+
+Set `MISSION_COST_PRICING_OVERRIDES` to a JSON object when you use a different
+model, service tier, region, or provider. Values are USD per million tokens:
+
+```text
+MISSION_COST_PRICING_OVERRIDES={"my-model":{"input":1,"cachedInput":0.1,"output":4}}
+```
+
+Usage still appears for an unpriced model, but the total cost is withheld until
+that model has an override. The UI labels cost as an estimate because
+account-specific pricing, regional uplifts, and non-token tool charges are
+outside the local calculation.
+
 ## Phoenix tracing
 
 Phoenix tracing is optional and does not affect the mission interface. Start a
@@ -102,8 +147,9 @@ docker rm phoenix          # Remove the stopped container
 1. Select **Get mission team assessment**.
 2. Watch **Team activity** as the Director chooses specialists and evidence sources for this incident.
 3. Read the structured recommendation, including its remaining uncertainties.
-4. Select **Review proposed command**, authorize it, then advance the mission clock.
-5. Review the team record and whether the selected plan stabilized the incident.
+4. Select **Review proposed command**, then submit the SDK-paused plan for authorization.
+5. Authorize or decline the paused `submit_mission_plan` tool call, then advance the mission clock after authorization.
+6. Review the team record and whether the selected plan stabilized the incident.
 
 ## Validate
 
@@ -121,10 +167,10 @@ Use `npm run format` to apply the project formatting style locally.
 
 ## Next capabilities
 
-The scaffolding deliberately keeps external systems simulated. The natural next
-increment is a Mission Control MCP server for telemetry and inventory, followed
-by a SandboxAgent counterfactual analyst that writes scenario artifacts in an
-isolated workspace.
+The scaffolding deliberately keeps external systems simulated. A natural next
+increment is a SandboxAgent counterfactual analyst that writes scenario artifacts
+in an isolated workspace, followed by a handoff-based specialist conversation for
+commander follow-up questions.
 
 ---
 

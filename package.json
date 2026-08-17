@@ -16,6 +16,7 @@
   "dependencies": {
     "@arizeai/openinference-instrumentation-openai-agents": "^0.2.6",
     "@arizeai/phoenix-otel": "^2.2.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@openai/agents": "latest",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
