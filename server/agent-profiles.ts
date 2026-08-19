@@ -6,6 +6,9 @@ type ReasoningEffort = (typeof reasoningEfforts)[number];
 type AgentProfile = { model: string; reasoningEffort: ReasoningEffort };
 export type PublicAgentProfile = Pick<AgentProfile, "model" | "reasoningEffort">;
 
+export const DEFAULT_AGENT_MODEL = "gpt-5.6-sol";
+export const DEFAULT_REASONING_EFFORT: ReasoningEffort = "medium";
+
 function configuredModel(variable: string, fallback: string) {
   return process.env[variable]?.trim() || fallback;
 }
@@ -17,25 +20,22 @@ function configuredReasoningEffort(variable: string, fallback: ReasoningEffort):
     : fallback;
 }
 
-function profile(prefix: string, fallback: AgentProfile): AgentProfile {
+function profile(prefix: string): AgentProfile {
   return {
-    model: configuredModel(prefix + "_MODEL", fallback.model),
+    model: configuredModel(prefix + "_MODEL", DEFAULT_AGENT_MODEL),
     reasoningEffort: configuredReasoningEffort(
       prefix + "_REASONING_EFFORT",
-      fallback.reasoningEffort
+      DEFAULT_REASONING_EFFORT
     ),
   };
 }
 
 export const agentProfiles: Record<AgentProfileName, AgentProfile> = {
-  "Mission Director": profile("MISSION_DIRECTOR", {
-    model: "gpt-5.6-sol",
-    reasoningEffort: "high",
-  }),
-  NOVA: profile("NOVA", { model: "gpt-5.6-terra", reasoningEffort: "medium" }),
-  AURA: profile("AURA", { model: "gpt-5.6-terra", reasoningEffort: "medium" }),
-  KEPLER: profile("KEPLER", { model: "gpt-5.6-luna", reasoningEffort: "low" }),
-  MERCURY: profile("MERCURY", { model: "gpt-5.6-sol", reasoningEffort: "high" }),
+  "Mission Director": profile("MISSION_DIRECTOR"),
+  NOVA: profile("NOVA"),
+  AURA: profile("AURA"),
+  KEPLER: profile("KEPLER"),
+  MERCURY: profile("MERCURY"),
 };
 
 export const publicAgentProfiles: Record<AgentProfileName, PublicAgentProfile> = Object.fromEntries(
