@@ -61,11 +61,27 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 ![Arize Phoenix showing metrics](docs/images/phoenix-metrics.png)
 
+## Prerequisites
+
+- A current Node.js LTS release with npm
+- An OpenAI API key, only if you want to run a model-backed mission assessment
+- Docker or Finch, only if you want to enable optional Phoenix tracing
+
+The local simulator and mission console can run without an OpenAI API key. Copy
+`.env.example` to `.env.local` and add your key before selecting **Get mission
+team assessment**.
+
 ## Run it
+
+> **Before you proceed:** Selecting **Get mission team assessment** sends
+> requests to the configured model provider and may incur API charges on your
+> account. Review your provider's current pricing, billing settings, and usage
+> limits before running an assessment. The local simulator and mission console
+> can be explored without making model requests.
 
 Run `npm install`, then `npm run dev`.
 
-Open http://localhost:5173. The server reads OPENAI_API_KEY from .env.local;
+Open <http://localhost:5173>. The server reads OPENAI_API_KEY from .env.local;
 it is only used when you select Get mission team assessment. The rest of the
 simulator runs locally and deterministically.
 
@@ -121,7 +137,7 @@ Phoenix collector with Docker:
 docker run -d --name phoenix -p 6006:6006 arizephoenix/phoenix:latest
 ```
 
-Open Phoenix at http://localhost:6006, then add these values to `.env.local`:
+Open Phoenix at <http://localhost:6006>, then add these values to `.env.local`:
 
 ```text
 PHOENIX_ENABLED=true
