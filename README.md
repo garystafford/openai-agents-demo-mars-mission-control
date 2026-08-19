@@ -63,7 +63,7 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 ## Run it
 
-Run npm install, then npm run dev.
+Run `npm install`, then `npm run dev`.
 
 Open http://localhost:5173. The server reads OPENAI_API_KEY from .env.local;
 it is only used when you select Get mission team assessment. The rest of the
