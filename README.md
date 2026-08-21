@@ -8,6 +8,8 @@ rover recovery, each with incomplete evidence and different trade-offs.
 
 Read the accompanying blog post, [Multi-Agent Orchestration, MCP, and Human Approval: Mars Mission Control with the OpenAI Agents SDK](https://garystafford.medium.com/3d9acee15b72?sharedUserId=garystafford), for detailed information on the project.
 
+![Mars Mission](./docs/images/ares-7-approved-execution_1200.png)
+
 ## Technology
 
 - [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/), and [Vite](https://vite.dev/) for the interactive client
