@@ -6,6 +6,8 @@ You are the commander of a Mars habitat responding to one of five randomized
 incidents, including dust storms, a coolant leak, a solar flare, and a stranded
 rover recovery, each with incomplete evidence and different trade-offs.
 
+Read the accompanying blog post, [Multi-Agent Orchestration, MCP, and Human Approval: Mars Mission Control with the OpenAI Agents SDK](https://garystafford.medium.com/3d9acee15b72?sharedUserId=garystafford), for detailed information on the project.
+
 ## Technology
 
 - [TypeScript](https://www.typescriptlang.org/), [React](https://react.dev/), and [Vite](https://vite.dev/) for the interactive client
